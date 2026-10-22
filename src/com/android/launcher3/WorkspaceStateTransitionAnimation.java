@@ -58,6 +58,7 @@ import com.android.launcher3.LauncherState.ScaleAndTranslation;
 import com.android.launcher3.anim.AnimatedFloat;
 import com.android.launcher3.anim.PendingAnimation;
 import com.android.launcher3.anim.PropertySetter;
+import com.android.launcher3.anim.SmoothSpringPresets;
 import com.android.launcher3.anim.SpringAnimationBuilder;
 import com.android.launcher3.graphics.Scrim;
 import com.android.launcher3.graphics.SysUiScrim;
@@ -255,8 +256,10 @@ public class WorkspaceStateTransitionAnimation {
     public static <T extends View> ValueAnimator getSpringScaleAnimator(Launcher launcher, T v,
             float scale, FloatProperty<T> property) {
         ResourceProvider rp = DynamicResource.provider(launcher);
-        float damping = rp.getFloat(R.dimen.hint_scale_damping_ratio);
-        float stiffness = rp.getFloat(R.dimen.hint_scale_stiffness);
+        // Stiffness and damping come from the central preset, so the whole launcher shares one feel.
+        SmoothSpringPresets.Preset preset = SmoothSpringPresets.INSTANCE.getActive();
+        float damping = preset.getDampingRatio();
+        float stiffness = preset.getStiffness();
         float velocityPxPerS = rp.getDimension(R.dimen.hint_scale_velocity_dp_per_s);
 
         return new SpringAnimationBuilder(v.getContext())
