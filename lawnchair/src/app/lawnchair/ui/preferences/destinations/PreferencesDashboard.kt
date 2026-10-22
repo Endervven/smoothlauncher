@@ -85,6 +85,7 @@ import app.lawnchair.ui.preferences.navigation.PreferenceRootRoute
 import app.lawnchair.ui.preferences.navigation.Quickstep
 import app.lawnchair.ui.preferences.navigation.Search
 import app.lawnchair.ui.preferences.navigation.Smartspace
+import app.lawnchair.ui.preferences.navigation.SmoothMotion
 import app.lawnchair.ui.util.addIf
 import app.lawnchair.util.isDefaultLauncher
 import app.lawnchair.util.restartLauncher
@@ -211,6 +212,14 @@ fun PreferencesDashboard(
                     isSelected = currentRoute is Quickstep,
                 )
             }
+
+            PreferenceCategory(
+                label = "Smooth Motion",
+                description = "Animationsstil und Federverhalten konfigurieren",
+                iconResource = R.drawable.ic_gestures,
+                onNavigate = { onNavigate(SmoothMotion) },
+                isSelected = currentRoute is SmoothMotion,
+            )
 
             PreferenceCategory(
                 label = stringResource(R.string.backup_and_restore_label),

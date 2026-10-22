@@ -54,6 +54,7 @@ import app.lawnchair.ui.preferences.destinations.SelectAppsForDrawerFolder
 import app.lawnchair.ui.preferences.destinations.SelectIconPreference
 import app.lawnchair.ui.preferences.destinations.ShapePreference
 import app.lawnchair.ui.preferences.destinations.SmartspacePreferences
+import app.lawnchair.ui.preferences.destinations.SmoothMotionPreferences
 import app.lawnchair.ui.preferences.destinations.icons.AdvancedIconPreferences
 import app.lawnchair.ui.preferences.destinations.icons.IconPackPreferences
 import app.lawnchair.ui.preferences.destinations.icons.ThemedIconsPreferences
@@ -202,6 +203,10 @@ fun PreferenceNavigation(
         composable<Quickstep>(
             deepLinks = getDeepLink(Quickstep),
         ) { QuickstepPreferences() }
+
+        composable<SmoothMotion>(
+            deepLinks = getDeepLink(SmoothMotion),
+        ) { SmoothMotionPreferences() }
         composable<BackupAndRestore>(
             deepLinks = getDeepLink(BackupAndRestore),
         ) { BackupAndRestorePreference() }

@@ -256,7 +256,8 @@ public class WorkspaceStateTransitionAnimation {
     public static <T extends View> ValueAnimator getSpringScaleAnimator(Launcher launcher, T v,
             float scale, FloatProperty<T> property) {
         ResourceProvider rp = DynamicResource.provider(launcher);
-        // Stiffness and damping come from the central preset, so the whole launcher shares one feel.
+        // Read persisted motion settings before creating this spring animation.
+        SmoothSpringPresets.load(launcher);
         SmoothSpringPresets.Preset preset = SmoothSpringPresets.INSTANCE.getActive();
         float damping = preset.getDampingRatio();
         float stiffness = preset.getStiffness();
