@@ -42,5 +42,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: smoothlauncher-debug-apk
-          path: '**/build/outputs/apk/debug/*.apk'
+          path: '**/build/outputs/apk/**/*.apk'
           if-no-files-found: error
