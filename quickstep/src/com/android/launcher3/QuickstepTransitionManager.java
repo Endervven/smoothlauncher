@@ -701,6 +701,25 @@ public class QuickstepTransitionManager implements OnDeviceProfileChangeListener
     }
 
     /**
+     * Selects the motion curve for app icon launch animations only.
+     * Widget and other transition animations keep their existing interpolators.
+     */
+    private Interpolator getAppLaunchInterpolator() {
+        String profile = mLauncher.getSharedPreferences(
+                "smooth_motion_preferences", 0).getString("profile", "smooth");
+
+        if ("snappy".equals(profile)) {
+            return new PathInterpolator(0.16f, 1f, 0.3f, 1f);
+        }
+        if ("gentle".equals(profile)) {
+            return new PathInterpolator(0.25f, 0.1f, 0.25f, 1f);
+        }
+
+        // Smooth and custom retain the existing curve for this first stage.
+        return mOpeningInterpolator;
+    }
+
+    /**
      * @return Animator that controls the window of the opening targets from app icons.
      */
     private Animator getOpeningWindowAnimators(View v,
@@ -708,6 +727,7 @@ public class QuickstepTransitionManager implements OnDeviceProfileChangeListener
             RemoteAnimationTarget[] wallpaperTargets,
             RemoteAnimationTarget[] nonAppTargets,
             boolean launcherClosing) {
+        final Interpolator appLaunchInterpolator = getAppLaunchInterpolator();
         RemoteAnimationTargets openingTargets = new RemoteAnimationTargets(appTargets,
                 wallpaperTargets, nonAppTargets, MODE_OPENING);
         int rotationChange = getRotationChange(appTargets);
@@ -807,27 +827,27 @@ public class QuickstepTransitionManager implements OnDeviceProfileChangeListener
 
         MultiValueUpdateListener listener = new MultiValueUpdateListener() {
             FloatProp mDx = new FloatProp(0, prop.dX, mOpeningXInterpolator);
-            FloatProp mDy = new FloatProp(0, prop.dY, mOpeningInterpolator);
+            FloatProp mDy = new FloatProp(0, prop.dY, appLaunchInterpolator);
 
             FloatProp mIconScaleToFitScreen = new FloatProp(prop.initialAppIconScale,
-                    prop.finalAppIconScale, mOpeningInterpolator);
+                    prop.finalAppIconScale, appLaunchInterpolator);
             FloatProp mIconAlpha = new FloatProp(prop.iconAlphaStart, 0f,
                     clampToDuration(LINEAR, APP_LAUNCH_ALPHA_START_DELAY, APP_LAUNCH_ALPHA_DURATION,
                             APP_LAUNCH_DURATION));
 
             FloatProp mWindowRadius = new FloatProp(initialWindowRadius, finalWindowRadius,
-                    mOpeningInterpolator);
+                    appLaunchInterpolator);
             FloatProp mShadowRadius = new FloatProp(0, finalShadowRadius,
-                    mOpeningInterpolator);
+                    appLaunchInterpolator);
 
             FloatProp mCropRectCenterX = new FloatProp(prop.cropCenterXStart, prop.cropCenterXEnd,
-                    mOpeningInterpolator);
+                    appLaunchInterpolator);
             FloatProp mCropRectCenterY = new FloatProp(prop.cropCenterYStart, prop.cropCenterYEnd,
-                    mOpeningInterpolator);
+                    appLaunchInterpolator);
             FloatProp mCropRectWidth = new FloatProp(prop.cropWidthStart, prop.cropWidthEnd,
-                    mOpeningInterpolator);
+                    appLaunchInterpolator);
             FloatProp mCropRectHeight = new FloatProp(prop.cropHeightStart, prop.cropHeightEnd,
-                    mOpeningInterpolator);
+                    appLaunchInterpolator);
 
             FloatProp mNavFadeOut = new FloatProp(1f, 0f, clampToDuration(
                     NAV_FADE_OUT_INTERPOLATOR, 0, ANIMATION_NAV_FADE_OUT_DURATION,
@@ -855,13 +875,13 @@ public class QuickstepTransitionManager implements OnDeviceProfileChangeListener
                             dragLayerBounds[0], dragLayerBounds[1], hasSplashScreen,
                             floatingView.isDifferentFromAppIcon());
                     mCropRectCenterY = new FloatProp(prop.cropCenterYStart, prop.cropCenterYEnd,
-                            mOpeningInterpolator);
+                            appLaunchInterpolator);
                     mCropRectHeight = new FloatProp(prop.cropHeightStart, prop.cropHeightEnd,
-                            mOpeningInterpolator);
-                    mDy = new FloatProp(0, prop.dY, mOpeningInterpolator);
+                            appLaunchInterpolator);
+                    mDy = new FloatProp(0, prop.dY, appLaunchInterpolator);
                     mIconScaleToFitScreen = new FloatProp(prop.initialAppIconScale,
-                            prop.finalAppIconScale, mOpeningInterpolator);
-                    float interpolatedPercent = mOpeningInterpolator.getInterpolation(percent);
+                            prop.finalAppIconScale, appLaunchInterpolator);
+                    float interpolatedPercent = appLaunchInterpolator.getInterpolation(percent);
                     mCropRectHeight.value = Utilities.mapRange(interpolatedPercent,
                             prop.cropHeightStart, prop.cropHeightEnd);
                     mCropRectCenterY.value = Utilities.mapRange(interpolatedPercent,
